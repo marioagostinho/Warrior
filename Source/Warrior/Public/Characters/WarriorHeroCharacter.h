@@ -6,6 +6,8 @@
 #include "Characters/WarriorBaseCharacter.h"
 #include "WarriorHeroCharacter.generated.h"
 
+struct FGameplayTag;
+class UHeroCombatComponent;
 class UDataAsset_InputConfig;
 class USpringArmComponent;
 class UCameraComponent;
@@ -18,6 +20,9 @@ class WARRIOR_API AWarriorHeroCharacter : public AWarriorBaseCharacter
 
 public:
 	AWarriorHeroCharacter();
+
+	// Getters
+	FORCEINLINE UHeroCombatComponent* GetHeroCombatComponent() const { return HeroCombatComponent; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -30,6 +35,8 @@ private:
 	USpringArmComponent* CameraBoom;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	UCameraComponent* FollowCamera;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = true))
+	UHeroCombatComponent* HeroCombatComponent;
 #pragma endregion
 
 #pragma region Inputs
@@ -38,5 +45,8 @@ private:
 
 	void Input_Move(const FInputActionValue& InputActionValue);
 	void Input_Look(const FInputActionValue& InputActionValue);
+
+	void Input_AbilityInputPressed(FGameplayTag InInputTag);
+	void Input_AbilityInputReleased(FGameplayTag InInputTag);
 #pragma endregion
 };

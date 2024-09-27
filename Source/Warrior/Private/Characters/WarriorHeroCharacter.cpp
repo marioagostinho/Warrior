@@ -7,11 +7,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "WarriorGameplayTags.h"
+#include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "Components/Input/WarriorInputComponent.h"
 #include "DataAssets/Input/DataAsset_InputConfig.h"
-
-#include  "WarriorDebugHelper.h"
-#include "AbilitySystem/WarriorAbilitySystemComponent.h"
+#include "Components/Combat/HeroCombatComponent.h"
 #include "DataAssets/StartUpData/DataAsset_HeroStartUpData.h"
 
 AWarriorHeroCharacter::AWarriorHeroCharacter()
@@ -26,6 +25,8 @@ AWarriorHeroCharacter::AWarriorHeroCharacter()
 	FollowCamera =  CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+
+	HeroCombatComponent = CreateDefaultSubobject<UHeroCombatComponent>(TEXT("HeroCombatComponent"));
 
 	// Character
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -59,9 +60,12 @@ void AWarriorHeroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	Subsystem->AddMappingContext(InputConfigDataAsset->DefaultMappingContext, 0);
 	UWarriorInputComponent* WarriorInputComponent = CastChecked<UWarriorInputComponent>(PlayerInputComponent);
 
-	// Bind
+	// Bind Native
 	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &AWarriorHeroCharacter::Input_Move);
 	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_Look, ETriggerEvent::Triggered, this, &AWarriorHeroCharacter::Input_Look);
+
+	// Bind Abilities
+	WarriorInputComponent->BindAbilityInputAction(InputConfigDataAsset, this, &AWarriorHeroCharacter::Input_AbilityInputPressed, &AWarriorHeroCharacter::Input_AbilityInputReleased);
 }
 
 void AWarriorHeroCharacter::PossessedBy(AController* NewController)
@@ -108,4 +112,14 @@ void AWarriorHeroCharacter::Input_Look(const FInputActionValue& InputActionValue
 	{
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AWarriorHeroCharacter::Input_AbilityInputPressed(FGameplayTag InInputTag)
+{
+	WarriorAbilitySystemComponent->OnAbilityInputPressed(InInputTag);
+}
+
+void AWarriorHeroCharacter::Input_AbilityInputReleased(FGameplayTag InInputTag)
+{
+	WarriorAbilitySystemComponent->OnAbilityInputReleased(InInputTag);
 }
