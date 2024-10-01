@@ -1,6 +1,5 @@
 // Mario Agostinho
 
-
 #include "Characters/WarriorBaseCharacter.h"
 
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
@@ -33,5 +32,15 @@ void AWarriorBaseCharacter::PossessedBy(AController* NewController)
 UAbilitySystemComponent* AWarriorBaseCharacter::GetAbilitySystemComponent() const
 {
 	return GetWarriorAbilitySystemComponent();
+}
+
+UPawnCombatComponent* AWarriorBaseCharacter::GetPawnCombatComponent() const
+{
+	return nullptr;
+}
+
+UPawnUIComponent* AWarriorBaseCharacter::GetPawnUIComponent() const
+{
+	return nullptr;
 }
 
